@@ -94,7 +94,7 @@ def create_rsa3_command(packer,OVSPVALL,OVSPVALM,OVSPVALH):
  values = {
    "TSREQPD": 1,
    "TSRMSW2": 1,
-   "OTSGNNTM2: 3,
+   "OTSGNNTM2": 3,
    "NTLVLSPD": 3,
    "OVSPNTM": 3,
    "OVSPVALL": OVSPVALL,
