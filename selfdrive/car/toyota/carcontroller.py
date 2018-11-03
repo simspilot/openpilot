@@ -93,8 +93,8 @@ def create_rsa3_command(packer,OVSPVALL,OVSPVALM,OVSPVALH):
  """Creates a CAN message for the Road Sign System."""
  values = {
    "TSREQPD": 1,
-   "TSRMSW2": 1,
-   "OTSGNNTM2": 3,
+   "TSRMSW": 1,
+   "OTSGNNTM": 3,
    "NTLVLSPD": 3,
    "OVSPNTM": 3,
    "OVSPVALL": OVSPVALL,
@@ -103,7 +103,7 @@ def create_rsa3_command(packer,OVSPVALL,OVSPVALM,OVSPVALH):
    "TSRSPU": 1,
  }
  
- return packer.make_can_msg("RSA2", 0, values)
+ return packer.make_can_msg("RSA3", 0, values)
 
 def accel_hysteresis(accel, accel_steady, enabled):
 
