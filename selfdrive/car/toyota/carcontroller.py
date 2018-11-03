@@ -50,16 +50,16 @@ def poll_blindspot_status(lr):
 
 def rsa1(start,TSGN1,SPDVAL1,SYNCID1):
   if start:
-    m = "\x00\x00\x00\x00\x00\x00\x00" + SYNCID1
+    m = "\x00\x00\x00\x00\x00\x00\x00\x0" + SYNCID1
   else:
-    m = "\x01\x00\x46\x00\x00\x00\x00" + SYNCID1
+    m = "\x01\x00\x46\x00\x00\x00\x00\x0" + SYNCID1
   return make_can_msg(1161, m, 0, False)
 
 def rsa2(start,SPDUNT,SGNNUMP,SYNCID2):
   if start:
-    m = "\x00\x00\x00\x00\x00\x00\x00" + SYNCID2
+    m = "\x00\x00\x00\x00\x00\x00\x00\0" + SYNCID2
   else:
-    m = "\x00\x00\x00\x00\x00\x00\x84" + SYNCID2
+    m = "\x00\x00\x00\x00\x00\x00\x08\x4" + SYNCID2
   return make_can_msg(1162, m, 0, False)
 
 def rsa3(start):
@@ -143,6 +143,9 @@ class CarController(object):
     self.last_standstill = False
     self.standstill_req = False
     self.angle_control = False
+    self.rsa_counter = 0
+    self.rsa_sync_counter = 0
+    self.rsa_sync = ["1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
     self.blindspot_poll_counter = 0
     self.blindspot_blink_counter_left = 0
     self.blindspot_blink_counter_right = 0
@@ -297,7 +300,19 @@ class CarController(object):
     if self.blindspot_debug_enabled_right:
       if self.blindspot_poll_counter % 20 == 10 and self.blindspot_poll_counter > 1005:  # Poll blindspots at 5 Hz
         can_sends.append(poll_blindspot_status(RIGHT_BLINDSPOT))
-
+    if self.rsa_counter > 200:
+      if self.blindspot_poll_counter % 100 == 0:
+        rsa1(False,1,70,self.rsa_sync[self.rsa_sync_counter])
+        rsa2(False,1,1,self.rsa_sync[self.rsa_sync_counter])
+        rsa3(False)
+        self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
+    else:
+      if self.blindspot_poll_counter % 100 == 0:
+        rsa1(True,0,0,self.rsa_sync[self.rsa_sync_counter])
+        rsa2(True,0,0,self.rsa_sync[self.rsa_sync_counter])
+        rsa3(True)
+        self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
+    self.rsa_counter += 1
     #*** control msgs ***
     #print "steer", apply_steer, min_lim, max_lim, CS.steer_torque_motor
 
