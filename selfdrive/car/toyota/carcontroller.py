@@ -50,16 +50,16 @@ def poll_blindspot_status(lr):
 
 def rsa1(start,TSGN1,SPDVAL1,SYNCID1):
   if start:
-    m = "\x00\x00\x00\x00\x00\x00\x00\x0" + SYNCID1
+    m = "\x00\x00\x00\x00\x00\x00\x00\x00" + SYNCID1
   else:
-    m = "\x01\x00\x46\x00\x00\x00\x00\x0" + SYNCID1
+    m = "\x01\x00\x46\x00\x00\x00\x00\x00" + SYNCID1
   return make_can_msg(1161, m, 0, False)
 
 def rsa2(start,SPDUNT,SGNNUMP,SYNCID2):
   if start:
-    m = "\x00\x00\x00\x00\x00\x00\x00\0" + SYNCID2
+    m = "\x00\x00\x00\x00\x00\x00\x00\x00" + SYNCID2
   else:
-    m = "\x00\x00\x00\x00\x00\x00\x08\x4" + SYNCID2
+    m = "\x00\x00\x00\x00\x00\x00\x08\x40" + SYNCID2
   return make_can_msg(1162, m, 0, False)
 
 def rsa3(start):
