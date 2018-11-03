@@ -48,27 +48,62 @@ def poll_blindspot_status(lr):
   m = lr + "\x02\x21\x69\x00\x00\x00\x00"
   return make_can_msg(1872, m, 0, False)
 
-def rsa1(start,TSGN1,SPDVAL1,SYNCID1):
-  if start:
-    m = "\x00\x00\x00\x00\x00\x00\x00\x00" + SYNCID1
-  else:
-    m = "\x01\x00\x46\x00\x00\x00\x00\x00" + SYNCID1
-  return make_can_msg(1161, m, 0, False)
+def create_rsa1_command(packer,TSGN1,SPDVAL1, SYNCID1):
+ """Creates a CAN message for the Road Sign System."""
+ values = {
+   "TSGN1": TSGN1,
+   "TSGNGRY1": 0,
+   "TSGNHLT1": 0,
+   "SPDVAL1": SPDVAL1,
+   "SPLSGN1": 0,
+   "SPLSGN2": 0,
+   "TSGN2": 0,
+   "TSGNGRY2": 0,
+   "TSGNHLT2": 0,
+   "SPDVAL2": 0,
+   "BZRRQ_P": 0,
+   "BZRRQ_A": 0,
+   "SYNCID1": SYNCID1,
+ }
+ 
+ return packer.make_can_msg("RSA1", 0, values)
 
-def rsa2(start,SPDUNT,SGNNUMP,SYNCID2):
-  if start:
-    m = "\x00\x00\x00\x00\x00\x00\x00\x00" + SYNCID2
-  else:
-    m = "\x00\x00\x00\x00\x00\x00\x08\x40" + SYNCID2
-  return make_can_msg(1162, m, 0, False)
+def create_rsa2_command(packer,SPDUNT,SGNNUMP,SYNCID2):
+ """Creates a CAN message for the Road Sign System."""
+ values = {
+   "TSGN3": 0,
+   "TSGNGRY3": 0,
+   "TSGNHLT3": 0,
+   "SPLSGN3": 0,
+   "SPLSGN4": 0,
+   "TSGN4": 0,
+   "TSGNGRY4": 0,
+   "TSGNHLT4": 0,
+   "DPSGNREQ": 0,
+   "SGNNUMP": SGNNUMP,
+   "SGNNUMA": 0,
+   "SPDUNT": SPDUNT,
+   "TSRWMSG": 0,
+   "SYNCID2": SYNCID2,
+ }
+ 
+ return packer.make_can_msg("RSA2", 0, values)
 
-def rsa3(start):
-  if start:
-    m = "\xff\x00\x00\x00\x01\x00\x00\x00"
-  else:
-    m = "\xff\x07\x0a\x0f\x01\x00\x00\x00"
-  return make_can_msg(1163, m, 0, False)
-
+def create_rsa3_command(packer,OVSPVALL,OVSPVALM,OVSPVALH):
+ """Creates a CAN message for the Road Sign System."""
+ values = {
+   "TSREQPD": 1,
+   "TSRMSW2": 1,
+   "OTSGNNTM2: 3,
+   "NTLVLSPD": 3,
+   "OVSPNTM": 3,
+   "OVSPVALL": OVSPVALL,
+   "OVSPVALM": OVSPVALM,
+   "OVSPVALH": OVSPVALH,
+   "TSRSPU": 1,
+ }
+ 
+ return packer.make_can_msg("RSA2", 0, values)
 
 def accel_hysteresis(accel, accel_steady, enabled):
 
@@ -302,15 +337,15 @@ class CarController(object):
         can_sends.append(poll_blindspot_status(RIGHT_BLINDSPOT))
     if self.rsa_counter > 200:
       if self.blindspot_poll_counter % 100 == 0:
-        can_sends.append(rsa1(False,1,70,self.rsa_sync[self.rsa_sync_counter]))
-        can_sends.append(rsa2(False,1,1,self.rsa_sync[self.rsa_sync_counter]))
-        can_sends.append(rsa3(False))
+        can_sends.append(create_rsa1_command(packer,1,70,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa2_command(packer,1,1,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa3_command(packer,2,5,10))
         self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
     else:
       if self.blindspot_poll_counter % 100 == 0:
-        can_sends.append(rsa1(True,0,0,self.rsa_sync[self.rsa_sync_counter]))
-        can_sends.append(rsa2(True,0,0,self.rsa_sync[self.rsa_sync_counter]))
-        can_sends.append(rsa3(True))
+        can_sends.append(create_rsa1_command(packer,0,0,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa2_command(packer,0,0,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa3_command(packer,-5,-5,-5))
         self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
     self.rsa_counter += 1
     #*** control msgs ***
