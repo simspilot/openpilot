@@ -302,15 +302,15 @@ class CarController(object):
         can_sends.append(poll_blindspot_status(RIGHT_BLINDSPOT))
     if self.rsa_counter > 200:
       if self.blindspot_poll_counter % 100 == 0:
-        rsa1(False,1,70,self.rsa_sync[self.rsa_sync_counter])
-        rsa2(False,1,1,self.rsa_sync[self.rsa_sync_counter])
-        rsa3(False)
+        can_sends.append(rsa1(False,1,70,self.rsa_sync[self.rsa_sync_counter]))
+        can_sends.append(rsa2(False,1,1,self.rsa_sync[self.rsa_sync_counter]))
+        can_sends.append(rsa3(False))
         self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
     else:
       if self.blindspot_poll_counter % 100 == 0:
-        rsa1(True,0,0,self.rsa_sync[self.rsa_sync_counter])
-        rsa2(True,0,0,self.rsa_sync[self.rsa_sync_counter])
-        rsa3(True)
+        can_sends.append(rsa1(True,0,0,self.rsa_sync[self.rsa_sync_counter]))
+        can_sends.append(rsa2(True,0,0,self.rsa_sync[self.rsa_sync_counter]))
+        can_sends.append(rsa3(True))
         self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
     self.rsa_counter += 1
     #*** control msgs ***
