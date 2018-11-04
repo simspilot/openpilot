@@ -180,7 +180,7 @@ class CarController(object):
     self.angle_control = False
     self.rsa_counter = 0
     self.rsa_sync_counter = 0
-    self.rsa_sync = ["1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+    self.rsa_sync = 0
     self.blindspot_poll_counter = 0
     self.blindspot_blink_counter_left = 0
     self.blindspot_blink_counter_right = 0
@@ -337,10 +337,15 @@ class CarController(object):
         can_sends.append(poll_blindspot_status(RIGHT_BLINDSPOT))
     if self.rsa_counter > 200:
       if self.blindspot_poll_counter % 100 == 0:
-        can_sends.append(create_rsa1_command(self.packer,1,70,self.rsa_sync_counter + 1))
+        can_sends.append(create_rsa1_command(self.packer,1,self.rsa_sync,self.rsa_sync_counter + 1))
         can_sends.append(create_rsa2_command(self.packer,1,1,self.rsa_sync_counter + 1))
         can_sends.append(create_rsa3_command(self.packer,2,5,10))
+        print self.rsa_sync
         self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
+        if self.rsa_sync_counter == 0:
+          self.rsa_sync += 1
+        if self.rsa_sync = 256:
+          self.rsa_sync = 0
     else:
       if self.blindspot_poll_counter % 100 == 0:
         can_sends.append(create_rsa1_command(self.packer,0,0,self.rsa_sync_counter + 1))
