@@ -344,7 +344,7 @@ class CarController(object):
         self.rsa_sync_counter = (self.rsa_sync_counter + 1 ) % 15
         if self.rsa_sync_counter == 0:
           self.rsa_sync += 1
-        if self.rsa_sync = 256:
+        if self.rsa_sync == 256:
           self.rsa_sync = 0
     else:
       if self.blindspot_poll_counter % 100 == 0:
