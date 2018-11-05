@@ -31,11 +31,11 @@ def gps_distance(gpsLat, gpsLon, gpsAlt, gpsAcc):
   speedlimit = float(B[minindex,7])
   
   if abs(gpsAlt -B[minindex,3]) < altacc:
-    if gpsAcc<1.00001:
+    if gpsAcc<2.00001:
       #dist = 6371010*acos(sin(radians(gpsLat))*sin(radians(lat))+cos(radians(gpsLat))*cos(radians(lat))*cos(radians(gpsLon-lon)))
       dist = (np.sum((B[minindex,[0,1,2]] - A)**2))**0.5
-  #else:
-    #print "Altitude inacurate"
+  else:
+    print "Altitude inacurate"
   return dist, includeradius, approachradius, speedlimit
 
 def parse_gear_shifter(gear, vals):
@@ -344,8 +344,8 @@ class CarState(object):
     else:
       self.v_cruise_pcm = cp.vl["PCM_CRUISE_2"]['SET_SPEED']
     self.v_cruise_pcm = int(min(self.v_cruise_pcm, interp(self.angle_steers, self.Angle, self.Angle_Speed)))
-    #print "distane"
-    #print self.distance
+    print "distane"
+    print self.distance
     if self.distance < self.approachradius + self.includeradius:
       print "speed"
       print self.prev_distance - self.distance
