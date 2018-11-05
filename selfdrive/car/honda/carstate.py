@@ -135,39 +135,46 @@ def get_can_parser(CP):
 
 class CarState(object):
   def __init__(self, CP):
+    self.Angle = [0, 5, 10, 15,20,25,30,35,60,100,180,270,500]
+    self.Angle_Speed = [255,160,100,80,70,60,55,50,40,30,20,10,5]
+    self.blind_spot_on = bool(0)
     #labels for ALCA modes
     self.alcaLabels = ["MadMax","Normal","Wifey"]
+    self.trLabels = ["0.9","1.8","2.7"]
     self.alcaMode = 0
+    self.trMode = 0
     #if (CP.carFingerprint == CAR.MODELS):
     # ALCA PARAMS
     # max REAL delta angle for correction vs actuator
-    self.CL_MAX_ANGLE_DELTA_BP = [10., 44.]
-    self.CL_MAX_ANGLE_DELTA = [1.8, .3]
-     # adjustment factor for merging steer angle to actuator; should be over 4; the higher the smoother
+    self.CL_MAX_ANGLE_DELTA_BP = [10., 32., 44.]
+    self.CL_MAX_ANGLE_DELTA = [2.0, 0.96, 0.4]
+    # adjustment factor for merging steer angle to actuator; should be over 4; the higher the smoother
     self.CL_ADJUST_FACTOR_BP = [10., 44.]
     self.CL_ADJUST_FACTOR = [16. , 8.]
-     # reenrey angle when to let go
+    # reenrey angle when to let go
     self.CL_REENTRY_ANGLE_BP = [10., 44.]
     self.CL_REENTRY_ANGLE = [5. , 5.]
-     # a jump in angle above the CL_LANE_DETECT_FACTOR means we crossed the line
+    # a jump in angle above the CL_LANE_DETECT_FACTOR means we crossed the line
     self.CL_LANE_DETECT_BP = [10., 44.]
     self.CL_LANE_DETECT_FACTOR = [1.5, 1.5]
     self.CL_LANE_PASS_BP = [10., 20., 44.]
     self.CL_LANE_PASS_TIME = [40.,10., 3.] 
-     # change lane delta angles and other params
+    # change lane delta angles and other params
     self.CL_MAXD_BP = [10., 32., 44.]
     self.CL_MAXD_A = [.358, 0.084, 0.042] #delta angle based on speed; needs fine tune, based on Tesla steer ratio of 16.75
     self.CL_MIN_V = 8.9 # do not turn if speed less than x m/2; 20 mph = 8.9 m/s
-     # do not turn if actuator wants more than x deg for going straight; this should be interp based on speed
+    # do not turn if actuator wants more than x deg for going straight; this should be interp based on speed
     self.CL_MAX_A_BP = [10., 44.]
     self.CL_MAX_A = [10., 10.] 
-     # define limits for angle change every 0.1 s
+    # define limits for angle change every 0.1 s
     # we need to force correction above 10 deg but less than 20
     # anything more means we are going to steep or not enough in a turn
     self.CL_MAX_ACTUATOR_DELTA = 2.
+
     self.CL_MIN_ACTUATOR_DELTA = 0. 
-    self.CL_CORRECTION_FACTOR = 1.
-     #duration after we cross the line until we release is a factor of speed
+    self.CL_CORRECTION_FACTOR = [1.,1.,1.]
+    self.CL_CORRECTION_FACTOR_BP = [10., 32., 44.]
+    #duration after we cross the line until we release is a factor of speed
     self.CL_TIMEA_BP = [10., 32., 44.]
     self.CL_TIMEA_T = [0.7 ,0.30, 0.20]
     #duration to wait (in seconds) with blinkers on before starting to turn
@@ -217,12 +224,12 @@ class CarState(object):
     #BB init ui buttons
   def init_ui_buttons(self):
     btns = []
-    btns.append(UIButton("alca", "ALC", 0, self.alcaLabels[self.alcaMode], 0))
-    btns.append(UIButton("","",0,"",1))
-    btns.append(UIButton("","",0,"",2))
-    btns.append(UIButton("sound","SND",1,"",3))
-    btns.append(UIButton("","",0,"",4))
-    btns.append(UIButton("gas","Gas",0,"",5))
+    btns.append(UIButton("alca", "ALC", 1, self.alcaLabels[self.alcaMode], 0))
+    btns.append(UIButton("lka","LKA",1,"",1))
+    btns.append(UIButton("slow","SLO",1,"",2))
+    btns.append(UIButton("sound","SND",0,"",3))
+    btns.append(UIButton("tr","TR",0,self.trLabels[self.trMode],4))
+    btns.append(UIButton("gas","Gas",1,"",5))
     return btns
 
   #BB update ui buttons
@@ -234,6 +241,13 @@ class CarState(object):
           else:
             self.alcaMode = 0
           self.cstm_btns.btns[id].btn_label2 = self.alcaLabels[self.alcaMode]
+          self.cstm_btns.hasChanges = True
+      elif (id == 4) and (btn_status == 0) and self.cstm_btns.btns[id].btn_name=="tr":
+          if self.cstm_btns.btns[id].btn_label2 == self.trLabels[self.trMode]:
+            self.trMode = (self.trMode + 1 ) % 3
+          else:
+            self.trMode = 0
+          self.cstm_btns.btns[id].btn_label2 = self.trLabels[self.trMode]
           self.cstm_btns.hasChanges = True
       else:
         self.cstm_btns.btns[id].btn_status = btn_status * self.cstm_btns.btns[id].btn_status
@@ -251,7 +265,6 @@ class CarState(object):
 
     # update prevs, update must run once per loop
     self.prev_cruise_buttons = self.cruise_buttons
-    self.prev_cruise_setting = self.cruise_setting
     self.prev_blinker_on = self.blinker_on
 
     self.prev_left_blinker_on = self.left_blinker_on
@@ -307,7 +320,7 @@ class CarState(object):
     self.angle_steers = cp.vl["STEERING_SENSORS"]['STEER_ANGLE']
     self.angle_steers_rate = cp.vl["STEERING_SENSORS"]['STEER_ANGLE_RATE']
 
-    self.cruise_setting = cp.vl["SCM_BUTTONS"]['CRUISE_SETTING']
+    
     self.cruise_buttons = cp.vl["SCM_BUTTONS"]['CRUISE_BUTTONS']
 
     self.blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER'] or cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
@@ -364,11 +377,25 @@ class CarState(object):
                          cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH'] != self.brake_switch_ts)
       self.brake_switch_prev = self.brake_switch
       self.brake_switch_ts = cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH']
-
+    if self.cstm_btns.get_button_status("slow") == 0:
+        self.acc_slow_on = False
+    else:
+        self.acc_slow_on = True
+    if self.acc_slow_on:
+      self.v_cruise_pcm = max(self.v_cruise_pcm - 32, 8)
+    else:
+      self.v_cruise_pcm = self.v_cruise_pcm
+    self.v_cruise_pcm = int(min(self.v_cruise_pcm, interp(self.angle_steers, self.Angle, self.Angle_Speed)))
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
     self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
     self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
-
+    if self.cruise_setting == 3:
+      if cp.vl["SCM_BUTTONS"]["CRUISE_SETTING"] == 0:
+        self.trMode = (self.trMode + 1 ) % 3
+        self.cstm_btns.btns[4].btn_label2 = self.trLabels[self.trMode]
+    self.prev_cruise_setting = self.cruise_setting
+    self.cruise_setting = cp.vl["SCM_BUTTONS"]['CRUISE_SETTING']
+    self.read_distance_lines = self.trMode + 1
 
 # carstate standalone tester
 if __name__ == '__main__':
