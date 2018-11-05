@@ -180,7 +180,7 @@ class CarController(object):
     self.angle_control = False
     self.rsa_counter = 0
     self.rsa_sync_counter = 0
-    self.rsa_sync = 60
+    self.rsa_sync = 0
     self.blindspot_poll_counter = 0
     self.blindspot_blink_counter_left = 0
     self.blindspot_blink_counter_right = 0
