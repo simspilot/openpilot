@@ -289,6 +289,10 @@ def state_control(plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, 
   actuators.steer, actuators.steerAngle, angle_later = LaC.update(active, CS.vEgo, CS.steeringAngle,
                                                      CS.steeringPressed, plan.dPoly, angle_offset, VM, PL,CS.blindspot,CS.leftBlinker,CS.rightBlinker)
   print angle_later
+  Angle = [0, 5, 10, 15,20,25,30,35,60,100,180,270,500]
+  Angle_Speed = [255,150,90,75,60,50,45,40,30,20,15,10,5]
+  v_cruise_turn = int(min(v_cruise_kph, interp(angle_later, Angle, Angle_Speed)))
+  print v_cruise_turn
   # *** gas/brake PID loop ***
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
                                               v_cruise_kph, plan.vTarget, plan.vTargetFuture, plan.aTarget,
