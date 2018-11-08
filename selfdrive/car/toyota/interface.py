@@ -123,7 +123,7 @@ class CarInterface(object):
       ret.steerKf = 0.00006 # full torque for 10 deg at 80mph means 0.00007818594
       
 
-      elif candidate == CAR.COROLLA:
+    elif candidate == CAR.COROLLA:
       stop_and_go = False
       ret.safetyParam = 100 # see conversion factor for STEER_TORQUE_EPS in dbc file
       ret.wheelbase = 2.70
