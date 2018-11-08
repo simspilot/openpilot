@@ -142,7 +142,7 @@ class CarState(object):
     self.alcaLabels = ["MadMax","Normal","Wifey"]
     self.trLabels = ["0.9","1.8","2.7"]
     self.alcaMode = 0
-    self.trMode = 0
+    self.trMode = 1
     #if (CP.carFingerprint == CAR.MODELS):
     # ALCA PARAMS
     # max REAL delta angle for correction vs actuator
@@ -180,6 +180,8 @@ class CarState(object):
     #duration to wait (in seconds) with blinkers on before starting to turn
     self.CL_WAIT_BEFORE_START = 1
     #END OF ALCA PARAMS
+    
+    self.read_distance_lines_prev = 3
     
     self.CP = CP
     self.can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
@@ -396,6 +398,14 @@ class CarState(object):
     self.prev_cruise_setting = self.cruise_setting
     self.cruise_setting = cp.vl["SCM_BUTTONS"]['CRUISE_SETTING']
     self.read_distance_lines = self.trMode + 1
+    if self.read_distance_lines <> self.read_distance_lines_prev:
+      if self.read_distance_lines == 1:
+        self.UE.custom_alert_message(2,"Following distance set to 0.9s",200,3)
+      if self.read_distance_lines == 2:
+        self.UE.custom_alert_message(2,"Following distance set to 1.8s",200,3)
+      if self.read_distance_lines == 3:
+        self.UE.custom_alert_message(2,"Following distance set to 2.7s",200,3)
+      self.read_distance_lines_prev = self.read_distance_lines
 
 # carstate standalone tester
 if __name__ == '__main__':

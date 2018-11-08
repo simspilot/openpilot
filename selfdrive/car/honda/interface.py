@@ -294,8 +294,6 @@ class CarInterface(object):
       ret.wheelbase = 2.81
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 16.0         # as spec
-      #tire_stiffness_factor = 0.444 # not optimized yet
-      #ret.steerKpV, ret.steerKiV = [[0.38], [0.11]]
       ret.longitudinalKpBP = [0., 5., 35.]
       ret.longitudinalKpV = [1.2, 0.8, 0.5]
       ret.longitudinalKiBP = [0., 35.]
@@ -442,6 +440,8 @@ class CarInterface(object):
     ret.cruiseState.available = bool(self.CS.main_on)
     ret.cruiseState.speedOffset = self.CS.cruise_speed_offset
     ret.cruiseState.standstill = False
+    
+    ret.readdistancelines = self.CS.read_distance_lines
 
     # TODO: button presses
     buttonEvents = []
