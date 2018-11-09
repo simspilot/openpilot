@@ -852,6 +852,10 @@ void bb_ui_init(UIState *s) {
     s->b.gps_sock = zsock_new_sub(">tcp://127.0.0.1:8032", "");
     assert(s->b.gps_sock);
     s->b.gps_sock_raw = zsock_resolve(s->b.gps_sock);
+	
+    s->b.speedlimitd_sock = zsock_new_pub("@tcp://127.0.0.1:9000");
+    assert(s->b.speedlimitd_sock);
+    s->b.speedlimitd_sock_raw = zsock_resolve(s->b.speedlimitd_sock);
 
     //BB Load Images
     s->b.img_logo = nvgCreateImage(s->vg, "../assets/img_spinner_comma.png", 1);
