@@ -76,6 +76,8 @@ testModel: [8040, false]
 testLiveLocation: [8045, false]
 testJoystick: [8056, false]
 
+speedLimit: [9000, true]
+
 #ui Events
 uiButtonInfo: [8201, true]
 uiCustomAlert: [8202, true]
