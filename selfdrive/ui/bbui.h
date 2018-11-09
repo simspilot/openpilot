@@ -879,7 +879,7 @@ void bb_ui_set_car( UIState *s, char *model, char *folder) {
 
 void  bb_ui_poll_update( UIState *s) {
     int err;
-    zmq_pollitem_t bb_polls[8] = {{0}};
+    zmq_pollitem_t bb_polls[10] = {{0}};
     bb_polls[0].socket = s->b.uiButtonInfo_sock_raw;
     bb_polls[0].events = ZMQ_POLLIN;
     bb_polls[1].socket = s->b.uiCustomAlert_sock_raw;
@@ -890,11 +890,14 @@ void  bb_ui_poll_update( UIState *s) {
     bb_polls[3].events = ZMQ_POLLIN;
     bb_polls[4].socket = s->b.gps_sock_raw;
     bb_polls[4].events = ZMQ_POLLIN;
+    bb_polls[5].socket = s->b.speedlimitd_sock_raw;
+    bb_polls[5].events = ZMQ_POLLIN;
+    
 	
     while (true) {
 	    
 	    
-        int ret = zmq_poll(bb_polls, 5, 0);
+        int ret = zmq_poll(bb_polls, 6, 0);
         if (ret < 0) {
           LOGW("bb poll failed (%d)", ret);
           break;
@@ -1045,7 +1048,27 @@ void  bb_ui_poll_update( UIState *s) {
             capn_free(&ctx);
             zmq_msg_close(&msg);
         }
-            
+        if (bb_polls[5].revents) {
+          //speedlimit socket
+          zmq_msg_t msg;
+          err = zmq_msg_init(&msg);
+          assert(err == 0);
+          err = zmq_msg_recv(&msg, s->b.speedlimitd_sock_raw, 0);
+          assert(err >= 0);
+
+          struct capn ctx;
+          capn_init_mem(&ctx, zmq_msg_data(&msg), zmq_msg_size(&msg), 0);
+
+          cereal_SpeedLimitData_ptr stp;
+          stp.p = capn_getp(capn_root(&ctx), 0, 1);
+          struct cereal_SpeedLimitData datad;
+          cereal_read_SpeedLimitData(&datad, stp);
+
+          s->b.speedlimit = datad.speed;
+          
+          capn_free(&ctx);
+          zmq_msg_close(&msg);
+        }    
     }
 }
 
