@@ -1565,6 +1565,10 @@ struct LiveParametersData {
   angleOffset @2 :Float32;
 }
 
+struct SpeedLimitData {
+  speed @0 :Float32;
+}
+
 
 struct Event {
   # in nanoseconds?
@@ -1632,5 +1636,6 @@ struct Event {
     driverMonitoring @59 :DriverMonitoring;
     boot @60 :Boot;
     liveParameters @61 :LiveParametersData;
+    speedLimit @62 :SpeedLimitData;
   }
 }
