@@ -23,6 +23,8 @@ typedef struct BBUIState {
     void *uiButtonStatus_sock_raw; 
     zsock_t *gps_sock;
     void *gps_sock_raw;
+    zsock_t *speedlimitd_sock;
+    void *speedlimitd_sock_raw;
     int btns_x[6];
     int btns_y[6];
     int btns_r[6];
