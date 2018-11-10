@@ -876,7 +876,7 @@ void bb_ui_init(UIState *s) {
     assert(s->b.gps_sock);
     s->b.gps_sock_raw = zsock_resolve(s->b.gps_sock);
 	
-    s->b.speedlimitd_sock = zsock_new_sub("@tcp://127.0.0.1:8068");
+    s->b.speedlimitd_sock = zsock_new_sub("@tcp://127.0.0.1:8068", "");
     assert(s->b.speedlimitd_sock);
     s->b.speedlimitd_sock_raw = zsock_resolve(s->b.speedlimitd_sock);
 
