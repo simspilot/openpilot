@@ -1082,10 +1082,13 @@ void  bb_ui_poll_update( UIState *s) {
           struct capn ctx;
           capn_init_mem(&ctx, zmq_msg_data(&msg), zmq_msg_size(&msg), 0);
 
-          cereal_SpeedLimitData_ptr stp;
-          stp.p = capn_getp(capn_root(&ctx), 0, 1);
+          cereal_Event_ptr eventp;
+          eventp.p = capn_getp(capn_root(&ctx), 0, 1);
+          struct cereal_Event eventd;
+          cereal_read_Event(&eventd, eventp);
+		
           struct cereal_SpeedLimitData datad;
-          cereal_read_SpeedLimitData(&datad, stp);
+          cereal_read_SpeedLimitData(&datad, eventd.SpeedLimit);		
 
           s->b.speedlimit = datad.speed;
           
