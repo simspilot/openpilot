@@ -547,8 +547,12 @@ void bb_ui_draw_measures_left( UIState *s, int bb_x, int bb_y, int bb_w ) {
 		if(s->b.speedlimit < s->scene.v_ego) {
 			val_color = nvgRGBA(255, 0, 0, 200);
 		}
-
-		snprintf(val_str, sizeof(val_str), "%d", (int)(speedlimit * 3.6 + 0.5));
+	       if (s->is_metric) {
+			snprintf(val_str, sizeof(val_str), "%d", (int)(speedlimit * 3.6 + 0.5));
+		} else {
+			snprintf(val_str, sizeof(val_str), "%d", (int)(speedlimit * 2.2374144 + 0.5));
+		}
+		
 		snprintf(uom_str, sizeof(uom_str), "");
 
 		bb_h +=bb_ui_draw_measure(s, val_str, uom_str, "Limit", 
@@ -1090,7 +1094,7 @@ void  bb_ui_poll_update( UIState *s) {
           struct cereal_SpeedLimitData datad;
           cereal_read_SpeedLimitData(&datad, eventd.speedLimit);		
           if (datad.speed == 0){
-	    s->b.speedlimit = 255;
+	    s->b.speedlimit = 70.7;
 	  }
 	  else{
             s->b.speedlimit = datad.speed;
