@@ -117,7 +117,6 @@ class CarState(object):
     self.Angle = [0, 5, 10, 15,20,25,30,35,60,100,180,270,500]
     self.Angle_Speed = [255,160,100,80,70,60,55,50,40,33,27,17,12]
     #labels for ALCA modes
-    #self.alcaLabels = ["MadMax","Normal","Wifey"]
     self.alcaLabels = ["Normal","Mellow","MadMax"]
 
     self.alcaMode = 0
@@ -129,9 +128,12 @@ class CarState(object):
     # reenrey angle when to let go
     self.CL_REENTRY_ANGLE_BP = [10., 44.]
     self.CL_REENTRY_ANGLE = [5. , 5.]
+    # MadMax REAL delta angle for correction vs actuator
+    self.CL_MAX_ANGLE_DELTA_BP = [10., 44.]
+    self.CL_MAX_ANGLE_DELTA = [3.0, 0.96, 0.4] #increared 2.0 to 3.0 since 2.0 was too agressive
     # max REAL delta angle for correction vs actuator
-    self.CL_MAX_ANGLE_DELTA_BP = [10., 32., 44.]#[10., 44.]
-    self.CL_MAX_ANGLE_DELTA = [2.0, 0.96, 0.4]
+    #self.CL_MAX_ANGLE_DELTA_BP = [10., 32., 44.]#[10., 44.]
+    #self.CL_MAX_ANGLE_DELTA = [2.0, 0.96, 0.4]
      # a jump in angle above the CL_LANE_DETECT_FACTOR means we crossed the line
     self.CL_LANE_DETECT_BP = [10., 44.]
     self.CL_LANE_DETECT_FACTOR = [1.3, 1.3]
