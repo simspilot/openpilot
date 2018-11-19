@@ -206,7 +206,7 @@ class CarState(object):
     btns.append(UIButton("sound", "SND", 0, "", 0))
     btns.append(UIButton("alca", "ALC", 1, self.alcaLabels[self.alcaMode], 1))
     btns.append(UIButton("slow", "SLO", 1, "", 2))
-    btns.append(UIButton("lka", "LKA", 1, "", 3))
+    btns.append(UIButton("lka", "OP", 1, "", 3))
     btns.append(UIButton("tr", "DSU", 0, "", 4))
     btns.append(UIButton("gas", "GAS", 0, "", 5))
     return btns
