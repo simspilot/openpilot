@@ -30,15 +30,12 @@ OPENCL_LIBS = -lgsl -lCB -lOpenCL
 
 OPENGL_LIBS = -lGLESv3
 
-OPENSL_LIBS = -lOpenSLES
-
 FRAMEBUFFER_LIBS = -lutils -lgui -lEGL
 
 CFLAGS += -DQCOM
 CXXFLAGS += -DQCOM
 
-OBJS = slplay.o \
-       ui.o \
+OBJS = ui.o \
        ../common/glutil.o \
        ../common/visionipc.o \
        ../common/ipc.o \
@@ -67,16 +64,7 @@ ui: $(OBJS)
         -lhardware -lui \
         $(OPENGL_LIBS) \
         $(OPENCL_LIBS) \
-        ${OPENSL_LIBS} \
-        -Wl,-rpath=/system/lib64,-rpath=/system/comma/usr/lib \
         -lcutils -lm -llog -lui -ladreno_utils
-
-slplay.o: slplay.c
-	@echo "[ CC ] $@"
-	$(CC) $(CFLAGS) -fPIC \
-	-I../ \
-	$(OPENSL_LIBS) \
-	-c -o '$@' $^
 
 %.o: %.cc
 	@echo "[ CXX ] $@"

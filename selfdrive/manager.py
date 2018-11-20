@@ -95,7 +95,7 @@ managed_processes = {
   "proclogd": ("selfdrive/proclogd", ["./proclogd"]),
   "boardd": ("selfdrive/boardd", ["./boardd"]),   # not used directly
   "pandad": "selfdrive.pandad",
-  "ui": ("selfdrive/ui", ["./start.sh"]),
+  "ui": ("selfdrive/ui", ["./ui"]),
   "calibrationd": "selfdrive.locationd.calibrationd",
   "visiond": ("selfdrive/visiond", ["./visiond"]),
   "sensord": ("selfdrive/sensord", ["./sensord"]),
@@ -448,6 +448,8 @@ def main():
   if os.getenv("NOCONTROL") is not None:
     del managed_processes['controlsd']
     del managed_processes['radard']
+  if os.getenv("DEFAULTD") is not None:
+    managed_processes["controlsd"] = "selfdrive.controls.defaultd"
 
   # support additional internal only extensions
   try:
@@ -519,3 +521,4 @@ if __name__ == "__main__":
   main()
   # manual exit because we are forked
   sys.exit(0)
+
