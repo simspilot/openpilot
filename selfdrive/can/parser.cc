@@ -105,12 +105,7 @@ struct MessageState {
         tmp -= (tmp >> (sig.b2-1)) ? (1ULL << sig.b2) : 0; //signed
       }
 
-      // Testing both little and big endian signals (Tesla messages)
-      //if ( (address == 0x318) || (address == 0x118)) {
-      //  INFO("parse %X %s -> %f, dat -> %lX\n", address, sig.name, tmp * sig.factor + sig.offset, dat);
-      //}
-
-			DEBUG("parse %X %s -> %lld\n", address, sig.name, tmp);
+      DEBUG("parse %X %s -> %lld\n", address, sig.name, tmp);
 
       if (sig.type == SignalType::HONDA_CHECKSUM) {
         if (honda_checksum(address, dat, size) != tmp) {
@@ -264,6 +259,7 @@ class CANParser {
         memcpy(dat, cmsg.getDat().begin(), cmsg.getDat().size());
 
         // Assumes all signals in the message are of the same type (little or big endian)
+        // TODO: allow signals within the same message to have different endianess
         auto& sig = message_states[cmsg.getAddress()].parse_sigs[0];
         if (sig.is_little_endian) {
             p = read_u64_le(dat);

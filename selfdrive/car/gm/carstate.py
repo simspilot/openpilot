@@ -4,7 +4,8 @@ from common.kalman.simple_kalman import KF1D
 from selfdrive.config import Conversions as CV
 from selfdrive.can.parser import CANParser
 from selfdrive.car.gm.values import DBC, CAR, parse_gear_shifter, \
-                                    CruiseButtons, is_eps_status_ok
+                                    CruiseButtons, is_eps_status_ok, \
+                                    STEER_THRESHOLD
 
 def get_powertrain_can_parser(CP, canbus):
   # this function generates lists for signal, messages and initial values
@@ -30,7 +31,7 @@ def get_powertrain_can_parser(CP, canbus):
     ("LKATorqueDeliveredStatus", "PSCMStatus", 0),
   ]
 
-  if CP.carFingerprint == CAR.VOLT:
+  if CP.carFingerprint in (CAR.VOLT, CAR.MALIBU):
     signals += [
       ("RegenPaddle", "EBCMRegenPaddle", 0),
       ("TractionControlOn", "ESPStatus", 0),
@@ -91,7 +92,7 @@ class CarState(object):
     self.user_gas_pressed = self.pedal_gas > 0
 
     self.steer_torque_driver = pt_cp.vl["PSCMStatus"]['LKADriverAppldTrq']
-    self.steer_override = abs(self.steer_torque_driver) > 1.0
+    self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
 
     # 0 - inactive, 1 - active, 2 - temporary limited, 3 - failed
     self.lkas_status = pt_cp.vl["PSCMStatus"]['LKATorqueDeliveredStatus']
@@ -116,14 +117,14 @@ class CarState(object):
     self.left_blinker_on = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 1
     self.right_blinker_on = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 2
 
-    if self.car_fingerprint == CAR.VOLT:
+    if self.car_fingerprint in (CAR.VOLT, CAR.MALIBU):
       self.park_brake = pt_cp.vl["EPBStatus"]['EPBClosed']
       self.main_on = pt_cp.vl["ECMEngineStatus"]['CruiseMainOn']
       self.acc_active = False
       self.esp_disabled = pt_cp.vl["ESPStatus"]['TractionControlOn'] != 1
       self.regen_pressed = bool(pt_cp.vl["EBCMRegenPaddle"]['RegenPaddle'])
       self.pcm_acc_status = pt_cp.vl["AcceleratorPedal2"]['CruiseState']
-    else: 
+    else:
       self.park_brake = False
       self.main_on = False
       self.acc_active = pt_cp.vl["ASCMActiveCruiseControlStatus"]['ACCCmdActive']
@@ -140,4 +141,3 @@ class CarState(object):
     self.brake_pressed = self.user_brake > 10 or self.regen_pressed
 
     self.gear_shifter_valid = self.gear_shifter == car.CarState.GearShifter.drive
-
